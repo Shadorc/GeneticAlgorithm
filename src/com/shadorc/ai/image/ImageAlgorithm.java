@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -47,8 +48,8 @@ public class ImageAlgorithm {
         final ImageFrame frame = new ImageFrame(ImageAlgorithm.TARGET.toBufferedImage());
 
         int generation = 0;
-        final List<ImageIndividual> population = new ArrayList<>(ImageAlgorithm.POPULATION_SIZE);
-        final List<ImageIndividual> newGeneration = new CopyOnWriteArrayList<>();
+        final List<ImageIndividual> population = Collections.synchronizedList(new ArrayList<>(ImageAlgorithm.POPULATION_SIZE));
+        final List<ImageIndividual> newGeneration = Collections.synchronizedList(new ArrayList<>(ImageAlgorithm.POPULATION_SIZE));
 
         System.out.println("Generating initial population");
         final CountDownLatch initialLatch = new CountDownLatch(ImageAlgorithm.POPULATION_SIZE);
@@ -63,8 +64,10 @@ public class ImageAlgorithm {
         final int eliteCount = (10 * POPULATION_SIZE) / 100;
         final int offspringCount = (90 * POPULATION_SIZE) / 100;
         final int topTier = POPULATION_SIZE / 2;
+
+        long start;
         while (true) {
-            final long start = System.currentTimeMillis();
+            start = System.currentTimeMillis();
 
             population.sort(new Individual.IndividualComparator());
 
@@ -72,9 +75,7 @@ public class ImageAlgorithm {
                 break;
             }
 
-            for (int i = 0; i < eliteCount; i++) {
-                newGeneration.add(population.get(i));
-            }
+            newGeneration.addAll(population.subList(0, eliteCount));
 
             final CountDownLatch latch = new CountDownLatch(offspringCount);
             for (int i = 0; i < offspringCount; i++) {

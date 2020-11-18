@@ -9,21 +9,19 @@ import java.awt.image.BufferedImage;
 
 public class ImageFrame extends JFrame {
 
-    private final JLabel label2;
+    private final JLabel generatedImg;
 
     public ImageFrame(final BufferedImage img) {
         super("Image generation");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(new FlowLayout());
 
-        final ImageIcon icon1 = new ImageIcon(img);
-        final JLabel label1 = new JLabel();
-        label1.setIcon(icon1);
+        final JLabel originalImg = new JLabel();
+        originalImg.setIcon(new ImageIcon(img));
+        this.add(originalImg);
 
-        this.label2 = new JLabel();
-
-        this.add(label1);
-        this.add(this.label2);
+        this.generatedImg = new JLabel();
+        this.add(this.generatedImg);
 
         this.pack();
         this.setPreferredSize(new Dimension(img.getWidth() * 2, img.getHeight() * 2));
@@ -31,8 +29,7 @@ public class ImageFrame extends JFrame {
     }
 
     public void updateImage(final BufferedImage img) {
-        final ImageIcon icon = new ImageIcon(img);
-        this.label2.setIcon(icon);
+        this.generatedImg.setIcon(new ImageIcon(img));
     }
 
 }

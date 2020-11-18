@@ -43,8 +43,8 @@ public class ImageData {
         return this.data[x][y];
     }
 
-    public void setColor(final int x, final int y, final Integer[] colors) {
-        this.data[x][y] = colors;
+    public void setColor(final int x, final int y, final Integer[] rgb) {
+        this.data[x][y] = rgb;
     }
 
     public long distance(final ImageData other) {

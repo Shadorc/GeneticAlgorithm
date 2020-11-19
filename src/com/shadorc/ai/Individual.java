@@ -1,8 +1,6 @@
 package com.shadorc.ai;
 
-import java.util.Comparator;
-
-public abstract class Individual<T> {
+public abstract class Individual<T> implements Comparable<Individual<T>> {
 
     private final T chromosome;
     private final long fitness;
@@ -24,13 +22,9 @@ public abstract class Individual<T> {
         return this.chromosome;
     }
 
-    public static class IndividualComparator implements Comparator<Individual<?>> {
-
-        @Override
-        public int compare(final Individual<?> individual1, final Individual<?> individual2) {
-            return Long.compare(individual1.getFitness(), individual2.getFitness());
-        }
+    @Override
+    public int compareTo(Individual<T> other) {
+        return Long.compare(this.getFitness(), other.getFitness());
     }
-
 
 }

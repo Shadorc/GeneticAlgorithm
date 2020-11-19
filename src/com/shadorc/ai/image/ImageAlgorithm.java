@@ -1,14 +1,15 @@
 package com.shadorc.ai.image;
 
-import com.shadorc.ai.Individual;
-
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class ImageAlgorithm {
 
@@ -69,7 +70,7 @@ public class ImageAlgorithm {
         while (true) {
             start = System.currentTimeMillis();
 
-            population.sort(new Individual.IndividualComparator());
+            Collections.sort(population);
 
             if (population.get(0).getFitness() <= 0) {
                 break;

@@ -1,8 +1,7 @@
 package com.shadorc.ai.string;
 
-import com.shadorc.ai.Individual;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -37,7 +36,7 @@ public class StringAlgorithm {
         final int offspringCount = (90 * StringAlgorithm.POPULATION_SIZE) * 100;
         final int topTier = StringAlgorithm.POPULATION_SIZE / 2;
         while (true) {
-            population.sort(new Individual.IndividualComparator());
+            Collections.sort(population);
 
             if (population.get(0).getFitness() <= 0) {
                 break;

@@ -1,40 +1,48 @@
 package com.shadorc.ai.string;
 
+import com.shadorc.ai.GeneticAlgorithm;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class StringAlgorithm {
+public class StringAlgorithm extends GeneticAlgorithm<String, Character> {
 
     public static final String GENES = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890, .-;:_!\"#%&/()=?@${[]}*";
-    public static final String TARGET = "My name is PUCHI *Drop the bass*";
     public static final int POPULATION_SIZE = 100;
 
-    public static char mutatedGenes() {
-        return StringAlgorithm.GENES.charAt(ThreadLocalRandom.current().nextInt(StringAlgorithm.GENES.length()));
+    public StringAlgorithm() {
+        super("My name is PUCHI *Drop the bass*");
     }
 
-    public static String createGenome() {
+    @Override
+    public Character mutatedGenes() {
+        return GENES.charAt(ThreadLocalRandom.current().nextInt(GENES.length()));
+    }
+
+    @Override
+    public String createGenome() {
         final StringBuilder gnome = new StringBuilder();
-        for (int i = 0; i < StringAlgorithm.TARGET.length(); i++) {
-            gnome.append(StringAlgorithm.mutatedGenes());
+        for (int i = 0; i < this.getTarget().length(); i++) {
+            gnome.append(this.mutatedGenes());
         }
         return gnome.toString();
     }
 
-    public static void compute() {
+    @Override
+    public void compute() {
         int generation = 0;
-        final List<StringIndividual> population = new ArrayList<>(StringAlgorithm.POPULATION_SIZE);
-        final List<StringIndividual> newGeneration = new ArrayList<>(StringAlgorithm.POPULATION_SIZE);
+        final List<StringIndividual> population = new ArrayList<>(POPULATION_SIZE);
+        final List<StringIndividual> newGeneration = new ArrayList<>(POPULATION_SIZE);
 
-        for (int i = 0; i < StringAlgorithm.POPULATION_SIZE; i++) {
-            population.add(new StringIndividual(StringAlgorithm.createGenome()));
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            population.add(new StringIndividual(this, this.createGenome()));
         }
 
-        final int eliteCount = (10 * StringAlgorithm.POPULATION_SIZE) / 100;
-        final int offspringCount = (90 * StringAlgorithm.POPULATION_SIZE) * 100;
-        final int topTier = StringAlgorithm.POPULATION_SIZE / 2;
+        final int eliteCount = (10 * POPULATION_SIZE) / 100;
+        final int offspringCount = (90 * POPULATION_SIZE) * 100;
+        final int topTier = POPULATION_SIZE / 2;
         while (true) {
             Collections.sort(population);
 

@@ -1,5 +1,7 @@
 package com.shadorc.ai.image;
 
+import com.shadorc.ai.GeneticAlgorithm;
+
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
@@ -11,42 +13,40 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ImageAlgorithm {
+public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
 
     private static final Executor THREAD_POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
     public static final int POPULATION_SIZE = 50;
     public static final Integer[] GENES = {255, 255, 255}; // RGB
 
-    public static ImageData TARGET;
-
-    private static void loadImage() throws IOException {
-        final File file = new File("image.jpg");
-        ImageAlgorithm.TARGET = new ImageData(ImageIO.read(file));
+    public ImageAlgorithm(final String imagePath) throws IOException {
+        super(new ImageData(ImageIO.read(new File(imagePath))));
     }
 
-    public static Integer[] mutatedGenes() {
-        final Integer[] genes = new Integer[ImageAlgorithm.GENES.length];
-        for (int i = 0; i < ImageAlgorithm.GENES.length; i++) {
-            genes[i] = ThreadLocalRandom.current().nextInt(ImageAlgorithm.GENES[i]);
+    @Override
+    public Integer[] mutatedGenes() {
+        final Integer[] genes = new Integer[GENES.length];
+        for (int i = 0; i < genes.length; i++) {
+            genes[i] = ThreadLocalRandom.current().nextInt(GENES[i]);
         }
         return genes;
     }
 
-    public static ImageData createGenome() {
-        final ImageData genome = new ImageData(ImageAlgorithm.TARGET.getWidth(), ImageAlgorithm.TARGET.getHeight());
+    @Override
+    public ImageData createGenome() {
+        final ImageData genome = new ImageData(this.target.getWidth(), this.target.getHeight());
         for (int x = 0; x < genome.getWidth(); x++) {
             for (int y = 0; y < genome.getHeight(); y++) {
-                genome.setColor(x, y, ImageAlgorithm.mutatedGenes());
+                genome.setColor(x, y, this.mutatedGenes());
             }
         }
         return genome;
     }
 
-    public static void compute() throws IOException, InterruptedException {
-        ImageAlgorithm.loadImage();
-
-        final ImageFrame frame = new ImageFrame(ImageAlgorithm.TARGET.toBufferedImage());
+    @Override
+    public void compute() {
+        final ImageFrame frame = new ImageFrame(this.target.toBufferedImage());
 
         int generation = 0;
         final List<ImageIndividual> population = Collections.synchronizedList(new ArrayList<>(ImageAlgorithm.POPULATION_SIZE));
@@ -56,11 +56,16 @@ public class ImageAlgorithm {
         final CountDownLatch initialLatch = new CountDownLatch(ImageAlgorithm.POPULATION_SIZE);
         for (int i = 0; i < ImageAlgorithm.POPULATION_SIZE; i++) {
             THREAD_POOL.execute(() -> {
-                population.add(new ImageIndividual(ImageAlgorithm.createGenome()));
+                population.add(new ImageIndividual(this, this.createGenome()));
                 initialLatch.countDown();
             });
         }
-        initialLatch.await();
+
+        try {
+            initialLatch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         final int eliteCount = (10 * POPULATION_SIZE) / 100;
         final int offspringCount = (90 * POPULATION_SIZE) / 100;
@@ -88,7 +93,12 @@ public class ImageAlgorithm {
                     latch.countDown();
                 });
             }
-            latch.await();
+
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
 
             population.clear();
             population.addAll(newGeneration);

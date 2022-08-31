@@ -1,19 +1,24 @@
+/*
 package com.shadorc.ai.image;
 
-import com.shadorc.ai.GeneticAlgorithm;
+import com.shadorc.ai.Chromosome;
 import com.shadorc.ai.Individual;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ImageIndividual extends Individual<ImageData, Integer[]> {
+public class ImageIndividual extends Individual<Integer[]> {
 
-    public ImageIndividual(final GeneticAlgorithm<ImageData, Integer[]> algorithm, final ImageData chromosome) {
+    public ImageIndividual(final ImageAlgorithm algorithm, final Chromosome<Integer[]> chromosome) {
         super(algorithm, chromosome);
     }
 
+    public ImageIndividual(final ImageAlgorithm algorithm) {
+        super(algorithm);
+    }
+
     @Override
-    public ImageIndividual mate(final Individual<ImageData, Integer[]> partner) {
-        final ImageData childChromosome = new ImageData(this.algorithm.getTarget().getWidth(),
+    public ImageIndividual mate(final Individual<Integer[]> partner) {
+        final ImageData childChromosome = new ImageData(this.getAlgorithm().getTarget().getWidth(),
                 this.algorithm.getTarget().getHeight());
 
         for (int x = 0; x < childChromosome.getWidth(); x++) {
@@ -33,7 +38,8 @@ public class ImageIndividual extends Individual<ImageData, Integer[]> {
     }
 
     @Override
-    protected long computeFitness() {
+    protected double computeFitness() {
         return this.getChromosome().distance(this.algorithm.getTarget());
     }
 }
+*/

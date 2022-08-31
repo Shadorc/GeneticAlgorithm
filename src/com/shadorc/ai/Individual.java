@@ -1,32 +1,42 @@
 package com.shadorc.ai;
 
-public abstract class Individual<T, R> implements Comparable<Individual<T, R>> {
+public abstract class Individual<Gene> implements Comparable<Individual<Gene>> {
 
-    protected final GeneticAlgorithm<T, R> algorithm;
-    private final T chromosome;
-    private final long fitness;
+    private final GeneticAlgorithm<Gene> algorithm;
+    private final Chromosome<Gene> chromosome;
+    private double fitness;
 
-    public Individual(final GeneticAlgorithm<T, R> algorithm, final T chromosome) {
+    public Individual(final GeneticAlgorithm<Gene> algorithm, final Chromosome<Gene> chromosome) {
         this.algorithm = algorithm;
         this.chromosome = chromosome;
-        this.fitness = this.computeFitness();
     }
 
-    public abstract Individual<T, R> mate(final Individual<T, R> partner);
+    public Individual(final GeneticAlgorithm<Gene> algorithm) {
+        this(algorithm, algorithm.createChromosome());
+    }
 
-    protected abstract long computeFitness();
+    public abstract Individual<Gene> mate(final Individual<Gene> partner);
 
-    public long getFitness() {
+    protected abstract double computeFitness();
+
+    public double getFitness() {
+        if (this.fitness == 0.0) {
+            this.fitness = this.computeFitness();
+        }
         return this.fitness;
     }
 
-    public T getChromosome() {
+    public GeneticAlgorithm<Gene> getAlgorithm() {
+        return this.algorithm;
+    }
+
+    public Chromosome<Gene> getChromosome() {
         return this.chromosome;
     }
 
     @Override
-    public int compareTo(Individual<T, R> other) {
-        return Long.compare(this.getFitness(), other.getFitness());
+    public int compareTo(final Individual<Gene> other) {
+        return Double.compare(this.getFitness(), other.getFitness());
     }
 
 }

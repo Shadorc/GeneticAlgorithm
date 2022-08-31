@@ -1,13 +1,11 @@
 package com.shadorc.ai;
 
-import com.shadorc.ai.image.ImageAlgorithm;
-
-import java.io.IOException;
+import com.shadorc.ai.path.PathAlgorithm;
 
 public class Main {
 
-    public static void main(final String[] args) throws IOException, InterruptedException {
-        final ImageAlgorithm imageAlgorithm = new ImageAlgorithm("image.jpg");
-        imageAlgorithm.compute();
+    public static void main(final String[] args) {
+        final PathAlgorithm algorithm = new PathAlgorithm();
+        algorithm.compute();
     }
 }

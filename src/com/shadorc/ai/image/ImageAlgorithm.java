@@ -1,3 +1,4 @@
+/*
 package com.shadorc.ai.image;
 
 import com.shadorc.ai.GeneticAlgorithm;
@@ -13,15 +14,12 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
+public class ImageAlgorithm extends GeneticAlgorithm<Integer[]> {
 
     private static final Executor THREAD_POOL = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
-    public static final int POPULATION_SIZE = 50;
-    public static final Integer[] GENES = {255, 255, 255}; // RGB
-
     public ImageAlgorithm(final String imagePath) throws IOException {
-        super(new ImageData(ImageIO.read(new File(imagePath))));
+        super(100, new ImageData(ImageIO.read(new File(imagePath))));
     }
 
     @Override
@@ -34,7 +32,7 @@ public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
     }
 
     @Override
-    public ImageData createGenome() {
+    public ImageData createChromosome() {
         final ImageData genome = new ImageData(this.target.getWidth(), this.target.getHeight());
         for (int x = 0; x < genome.getWidth(); x++) {
             for (int y = 0; y < genome.getHeight(); y++) {
@@ -49,14 +47,14 @@ public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
         final ImageFrame frame = new ImageFrame(this.target.toBufferedImage());
 
         int generation = 0;
-        final List<ImageIndividual> population = Collections.synchronizedList(new ArrayList<>(ImageAlgorithm.POPULATION_SIZE));
-        final List<ImageIndividual> newGeneration = Collections.synchronizedList(new ArrayList<>(ImageAlgorithm.POPULATION_SIZE));
+        final List<ImageIndividual> population = Collections.synchronizedList(new ArrayList<>(this.getPopulationSize()));
+        final List<ImageIndividual> newGeneration = Collections.synchronizedList(new ArrayList<>(this.getPopulationSize()));
 
         System.out.println("Generating initial population");
-        final CountDownLatch initialLatch = new CountDownLatch(ImageAlgorithm.POPULATION_SIZE);
-        for (int i = 0; i < ImageAlgorithm.POPULATION_SIZE; i++) {
+        final CountDownLatch initialLatch = new CountDownLatch(this.getPopulationSize());
+        for (int i = 0; i < this.getPopulationSize(); i++) {
             THREAD_POOL.execute(() -> {
-                population.add(new ImageIndividual(this, this.createGenome()));
+                population.add(new ImageIndividual(this, this.createChromosome()));
                 initialLatch.countDown();
             });
         }
@@ -67,9 +65,9 @@ public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
             throw new RuntimeException(e);
         }
 
-        final int eliteCount = (10 * POPULATION_SIZE) / 100;
-        final int offspringCount = (90 * POPULATION_SIZE) / 100;
-        final int topTier = POPULATION_SIZE / 2;
+        final int eliteCount = (10 * this.getPopulationSize()) / 100;
+        final int offspringCount = (90 * this.getPopulationSize()) / 100;
+        final int topTier = this.getPopulationSize() / 2;
 
         long start;
         while (true) {
@@ -104,7 +102,7 @@ public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
             population.addAll(newGeneration);
             newGeneration.clear();
 
-            if (generation % 500 == 0) {
+            if (generation % 100 == 0) {
                 frame.updateImage(population.get(0).getChromosome().toBufferedImage());
                 System.out.println("Generation: " + generation
                         + " | Fitness: " + population.get(0).getFitness()
@@ -118,3 +116,4 @@ public class ImageAlgorithm extends GeneticAlgorithm<ImageData, Integer[]> {
     }
 
 }
+*/

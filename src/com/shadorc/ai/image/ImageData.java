@@ -60,7 +60,8 @@ public class ImageData {
     }
 
     public BufferedImage toBufferedImage() {
-        final BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(), BufferedImage.TYPE_INT_RGB);
+        final BufferedImage bufferedImage = new BufferedImage(this.getWidth(), this.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
         for (int x = 0; x < this.getWidth(); x++) {
             for (int y = 0; y < this.getHeight(); y++) {
                 final int rgb = 255 << 24 | (this.getRed(x, y) & 255) << 16
